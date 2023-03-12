@@ -1,1 +1,5 @@
 dataset.csv
+model/ensemble.pkl
+model/mnb.pkl
+model/rf.pkl
+model/svc.pkl

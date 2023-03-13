@@ -47,15 +47,15 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
 
     html.Div(className='form-group row mb-3', children=[
         html.Label(className='col-sm-2 col-form-label',
-                   children='Enter some text:'),
+                   children='Enter some review:'),
         html.Div(className='col-sm-10', children=[
             dcc.Input(id='input-box', type='text',
                       className='form-control', value='')
         ])
     ]),
 
-    html.Div(className='form-group row mb-10', children=[
-        html.Div(className='col-sm-10 offset-sm-2', children=[
+    html.Div(className='form-group row mb-5', children=[
+        html.Div(className='col-sm-10 offset-sm-2 mb-2', children=[
             html.Button('Submit', id='button',
                         className='btn btn-primary', n_clicks=0)
         ])
@@ -85,7 +85,7 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
         ])
     ]),
 
-    html.Div(className='form-group row mb-5', children=[
+    html.Div(className='form-group row mb-2', children=[
         html.Div(className='col-sm-10', children=[
             html.Div(id='output-ensemble', className='h5')
         ])
@@ -96,10 +96,11 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
 # Define the callback
 @app.callback(
     # [Output('output-mnb', 'children'),
-    [Output('output-svc', 'children'),
+    [Output('output-result', 'children'),
+     Output('output-svc', 'children'),
      Output('output-rfc', 'children'),
      Output('output-ensemble', 'children'),
-     Output('output-result', 'children')],
+     Output('output-mnb', 'children'), ],
     [Input('button', 'n_clicks')],
     [State('input-box', 'value')])
 def update_output(n_clicks, value):
@@ -108,8 +109,8 @@ def update_output(n_clicks, value):
         userInput = count_vectorizer.transform([value])
 
         # Use the trained models to make a prediction on the input text
-        nb_pred = mnb_model.predict(userInput)[0]
-        nb_proba = mnb_model.predict_proba(userInput)[0][1]
+        mnb_pred = mnb_model.predict(userInput)[0]
+        mnb_proba = mnb_model.predict_proba(userInput)[0][1]
 
         svc_pred = svc_model.predict(userInput)[0]
         svc_proba = svc_model.predict_proba(userInput)[0][1]
@@ -121,14 +122,14 @@ def update_output(n_clicks, value):
         ensemble_proba = ensemble_model.predict_proba(userInput)[0][1]
 
         # Format the prediction as a string
-        if nb_pred == -1:
-            nb_output_class = 'Negative'
-            nb_output_class_style = {'color': 'red'}
-            nb_output_proba = nb_proba
+        if mnb_pred == -1:
+            mnb_output_class = 'Negative'
+            mnb_output_class_style = {'color': 'red'}
+            mnb_output_proba = mnb_proba
         else:
-            nb_output_class = 'Positive'
-            nb_output_class_style = {'color': 'green'}
-            nb_output_proba = nb_proba
+            mnb_output_class = 'Positive'
+            mnb_output_class_style = {'color': 'green'}
+            mnb_output_proba = mnb_proba
 
         if svc_pred == -1:
             svc_output_class = 'Negative'
@@ -158,7 +159,7 @@ def update_output(n_clicks, value):
             ensemble_output_proba = ensemble_proba
 
         # final_pred = svc_pred + rf_pred + ensemble_pred
-        final_pred = svc_pred + rf_pred + ensemble_pred + nb_pred
+        final_pred = svc_pred + rf_pred + ensemble_pred + mnb_pred
 
         if final_pred < 0:
             final_output_class = 'Negative'
@@ -169,10 +170,18 @@ def update_output(n_clicks, value):
 
         return (
             html.Div([
+                html.Span(['Final Desicion for ', html.U(f'\'{value}\''), ' is '],
+                          style={'font-weight': 'bold', 'white-space': 'pre'}),
+                html.Span(final_output_class,
+                          style=final_output_class_style),
+                html.Span('!',
+                          style={'font-weight': 'bold', 'white-space': 'pre'}),
+            ]),
+            html.Div([
                 html.Span('Naive Bayes Prediction       : ',
                           style={'font-weight': 'bold', 'white-space': 'pre'}),
-                html.Span(nb_output_class, style=nb_output_class_style),
-                html.Span(f' ({nb_output_proba:.2f})',
+                html.Span(mnb_output_class, style=mnb_output_class_style),
+                html.Span(f' (Probability:{mnb_output_proba:.2f})',
                           style={'font-weight': 'bold'})
             ]),
             html.Div([
@@ -195,21 +204,12 @@ def update_output(n_clicks, value):
                           style={'font-weight': 'bold', 'white-space': 'pre'}),
                 html.Span(ensemble_output_class,
                           style=ensemble_output_class_style),
-                html.Span(f' (Probability:{ensemble_output_proba:.2f})',
+                html.Span(f'(Probability:{ensemble_output_proba:.2f})',
                           style={'font-weight': 'bold'})
             ]),
-
-            html.Div([
-                html.Span(['Final Desicion for ', html.U(f'\'{value}\''), ' is '],
-                          style={'font-weight': 'bold', 'white-space': 'pre'}),
-                html.Span(final_output_class,
-                          style=final_output_class_style),
-                html.Span('!',
-                          style={'font-weight': 'bold', 'white-space': 'pre'}),
-            ])
         )
     else:
-        return html.Span(''), html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
+        return html.Span('Prediction Result Output'), html.Span(''), html.Span(''), html.Span(''), html.Span('')
         # return html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
 
 

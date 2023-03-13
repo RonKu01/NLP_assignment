@@ -5,23 +5,23 @@ from dash.dependencies import Input, Output, State
 import pickle
 
 # Load the saved model using pickle
-with open('model/mnb.pkl', 'rb') as f:
-    mnb_model = pickle.load(f)
+with open('model/mnb.pkl', 'rb') as mnb:
+    mnb_model = pickle.load(mnb)
 
-with open('model/svc.pkl', 'rb') as f:
-    svc_model = pickle.load(f)
-
-# Load the trained model using pickle
-with open('model/rf.pkl', 'rb') as f:
-    rf_model = pickle.load(f)
+with open('model/svc.pkl', 'rb') as svc:
+    svc_model = pickle.load(svc)
 
 # Load the trained model using pickle
-with open('model/ensemble.pkl', 'rb') as f:
-    ensemble_model = pickle.load(f)
+with open('model/rf.pkl', 'rb') as rf:
+    rf_model = pickle.load(rf)
+
+# Load the trained model using pickle
+with open('model/ensemble.pkl', 'rb') as ensemble:
+    ensemble_model = pickle.load(ensemble)
 
 # Load the transformer using pickle
-with open('model/transformer.pkl', 'rb') as f:
-    count_vectorizer = pickle.load(f)
+with open('model/transformer.pkl', 'rb') as transformer:
+    count_vectorizer = pickle.load(transformer)
 
 # Define the app
 app = dash.Dash(__name__)
@@ -67,11 +67,11 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
         ])
     ]),
 
-    # html.Div(className='form-group row mb-2', children=[
-    #     html.Div(className='col-sm-5', children=[
-    #         html.Div(id='output-mnb', className='h5')
-    #     ])
-    # ]),
+    html.Div(className='form-group row mb-2', children=[
+        html.Div(className='col-sm-5', children=[
+            html.Div(id='output-mnb', className='h5')
+        ])
+    ]),
 
     html.Div(className='form-group row mb-2', children=[
         html.Div(className='col-sm-10', children=[
@@ -108,8 +108,8 @@ def update_output(n_clicks, value):
         userInput = count_vectorizer.transform([value])
 
         # Use the trained models to make a prediction on the input text
-        # nb_pred = mnb_model.predict(userInput)[0]
-        # nb_proba = mnb_model.predict_proba(userInput)[0][1]
+        nb_pred = mnb_model.predict(userInput)[0]
+        nb_proba = mnb_model.predict_proba(userInput)[0][1]
 
         svc_pred = svc_model.predict(userInput)[0]
         svc_proba = svc_model.predict_proba(userInput)[0][1]
@@ -121,14 +121,14 @@ def update_output(n_clicks, value):
         ensemble_proba = ensemble_model.predict_proba(userInput)[0][1]
 
         # Format the prediction as a string
-        # if nb_pred == -1:
-        #     nb_output_class = 'Negative'
-        #     nb_output_class_style = {'color': 'red'}
-        #     nb_output_proba = nb_proba
-        # else:
-        #     nb_output_class = 'Positive'
-        #     nb_output_class_style = {'color': 'green'}
-        #     nb_output_proba = nb_proba
+        if nb_pred == -1:
+            nb_output_class = 'Negative'
+            nb_output_class_style = {'color': 'red'}
+            nb_output_proba = nb_proba
+        else:
+            nb_output_class = 'Positive'
+            nb_output_class_style = {'color': 'green'}
+            nb_output_proba = nb_proba
 
         if svc_pred == -1:
             svc_output_class = 'Negative'
@@ -157,8 +157,8 @@ def update_output(n_clicks, value):
             ensemble_output_class_style = {'color': 'green'}
             ensemble_output_proba = ensemble_proba
 
-        # final_pred = svc_pred + rf_pred + ensemble_pred + nb_pred
-        final_pred = svc_pred + rf_pred + ensemble_pred
+        # final_pred = svc_pred + rf_pred + ensemble_pred
+        final_pred = svc_pred + rf_pred + ensemble_pred + nb_pred
 
         if final_pred < 0:
             final_output_class = 'Negative'
@@ -168,13 +168,13 @@ def update_output(n_clicks, value):
             final_output_class_style = {'color': 'green'}
 
         return (
-            # html.Div([
-            #     html.Span('Naive Bayes Prediction       : ',
-            #               style={'font-weight': 'bold', 'white-space': 'pre'}),
-            #     html.Span(nb_output_class, style=nb_output_class_style),
-            #     html.Span(f' ({nb_output_proba:.2f})',
-            #               style={'font-weight': 'bold'})
-            # ]),
+            html.Div([
+                html.Span('Naive Bayes Prediction       : ',
+                          style={'font-weight': 'bold', 'white-space': 'pre'}),
+                html.Span(nb_output_class, style=nb_output_class_style),
+                html.Span(f' ({nb_output_proba:.2f})',
+                          style={'font-weight': 'bold'})
+            ]),
             html.Div([
                 html.Span('SVC Prediction                     : ',
                           style={'font-weight': 'bold', 'white-space': 'pre'}),
@@ -209,8 +209,8 @@ def update_output(n_clicks, value):
             ])
         )
     else:
-        # return html.Span(''), html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
-        return html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
+        return html.Span(''), html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
+        # return html.Span(''), html.Span(''), html.Span(''), html.Span('Prediction Result Output')
 
 
 # Run the app

@@ -12,7 +12,7 @@ with open('model/svc.pkl', 'rb') as f:
     svc_model = pickle.load(f)
 
 # Load the trained model using pickle
-with open('model/svc.pkl', 'rb') as f:
+with open('model/rf.pkl', 'rb') as f:
     rf_model = pickle.load(f)
 
 # Load the trained model using pickle
@@ -45,7 +45,7 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
     html.H1(className='mt-3 mb-5 text-center',
             children='Dota2 Review Classifier'),
 
-    html.Div(className='form-group row mb-5', children=[
+    html.Div(className='form-group row mb-3', children=[
         html.Label(className='col-sm-2 col-form-label',
                    children='Enter some text:'),
         html.Div(className='col-sm-10', children=[
@@ -54,14 +54,14 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
         ])
     ]),
 
-    html.Div(className='form-group row mb-5', children=[
+    html.Div(className='form-group row mb-10', children=[
         html.Div(className='col-sm-10 offset-sm-2', children=[
             html.Button('Submit', id='button',
                         className='btn btn-primary', n_clicks=0)
         ])
     ]),
 
-    html.Div(className='form-group row mb-2', style={'border': '1px solid black', 'padding': '10px'}, children=[
+    html.Div(className='form-group row mb-5', style={'border': '1px solid black', 'padding': '10px'}, children=[
         html.Div(className='col-sm-10', children=[
             html.Div(id='output-result', className='h2')
         ])

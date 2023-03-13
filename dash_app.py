@@ -12,7 +12,7 @@ with open('model/svc.pkl', 'rb') as f:
     svc_model = pickle.load(f)
 
 # Load the trained model using pickle
-with open('model/rf.pkl', 'rb') as f:
+with open('model/svc.pkl', 'rb') as f:
     rf_model = pickle.load(f)
 
 # Load the trained model using pickle
@@ -61,6 +61,12 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
         ])
     ]),
 
+    html.Div(className='form-group row mb-2', style={'border': '1px solid black', 'padding': '10px'}, children=[
+        html.Div(className='col-sm-10', children=[
+            html.Div(id='output-result', className='h2')
+        ])
+    ]),
+
     # html.Div(className='form-group row mb-2', children=[
     #     html.Div(className='col-sm-5', children=[
     #         html.Div(id='output-mnb', className='h5')
@@ -82,12 +88,6 @@ app.layout = html.Div(className='container mt-5 pt-5', children=[
     html.Div(className='form-group row mb-5', children=[
         html.Div(className='col-sm-10', children=[
             html.Div(id='output-ensemble', className='h5')
-        ])
-    ]),
-
-    html.Div(className='form-group row mb-2', style={'border': '1px solid black', 'padding': '10px'}, children=[
-        html.Div(className='col-sm-10', children=[
-            html.Div(id='output-result', className='h2')
         ])
     ]),
 ])
